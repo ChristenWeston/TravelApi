@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TravelApi.Models;
 using System.Linq;
 
+
 namespace TravelApi.Controllers
 {
   [Route("api/[controller]")]
@@ -24,7 +25,7 @@ namespace TravelApi.Controllers
     //added a parameter to the method of type string that we've called species. The naming here is important as .NET
     // will automatically bind parameter values based on the query string. A call to http://localhost:5000/api/animals?species=dinosaur 
     //will now trigger our Get method and automatically bind the value "dinosaur" to the variable species. It does this by utilizing model binding
-    public async Task<ActionResult<IEnumerable<Review>>> Get(int reviewId, string description, int rating, string city)
+    public async Task<ActionResult<IEnumerable<Review>>> Get(string description, int rating, string city)
     {
       var query = _db.Reviews.AsQueryable();
 
@@ -57,6 +58,18 @@ namespace TravelApi.Controllers
           return NotFound();
       }
       return review;
+    }
+//https://localhost:5001/api/Reviews/HighestRated
+    [HttpGet("HighestRated")]
+    public async Task<ActionResult<IEnumerable<Review>>> GetHighestRated()
+    {
+      // return _db.Reviews.Rating.ToList().Max();
+      var query = _db.Reviews.AsQueryable();
+      var rating = await _db.Reviews.Rating.ToListAsync();
+      var topRated = rating.Max();
+      query = query.Where(review => review.Rating == 5);
+      return topRated;
+      // return await query.ToListAsync();
     }
 //Our POST route utilizes the function CreatedAtAction. This is so that it can end up returning the Animal object to the user
 //, as well as update the status code to 201, for "Created", rather than the default 200 OK.
