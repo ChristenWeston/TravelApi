@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TravelApi.Models;
 using System.Linq;
+using System;
+
 
 
 namespace TravelApi.Controllers
@@ -59,18 +61,72 @@ namespace TravelApi.Controllers
       }
       return review;
     }
+
 //https://localhost:5001/api/Reviews/HighestRated
     [HttpGet("HighestRated")]
     public async Task<ActionResult<IEnumerable<Review>>> GetHighestRated()
     {
-      // return _db.Reviews.Rating.ToList().Max();
       var query = _db.Reviews.AsQueryable();
-      var rating = await _db.Reviews.Rating.ToListAsync();
-      var topRated = rating.Max();
-      query = query.Where(review => review.Rating == 5);
-      return topRated;
-      // return await query.ToListAsync();
+      var highestRating = _db.Reviews.Max(review => review.Rating);
+      query = query.Where(review => review.Rating == highestRating);
+      return await query.ToListAsync();
     }
+// var query2 = _db.Reviews.GroupBy(x => x.City).Select(x => x.OrderByDescending(x => x.Count()).FirstOrDefault());
+// .GroupBy _db.Reviews.City into CityCount
+// .Select(grp => new {CityCount.Max()}
+
+
+    //https://localhost:5001/api/Reviews/MostRatings
+    // [HttpGet("MostReviews")]
+    // public async Task<ActionResult<string>> GetMostRatings()
+    // {
+    //   var query = _db.Reviews.AsQueryable();
+        // var groupByQuery = from reviews in _db.Reviews
+        // group reviews by reviews.City into newGroup
+        // orderby newGroup.Key
+        // select newGroup;
+        // var groupByQueryList = groupByQuery.ToListAsync();
+    //   var listOfReviews = _db.Reviews.ToList();
+    //   var mostReviews = query.GroupBy(review => review.City);
+    //   var mostReviews2 = listOfReviews.GroupBy(review => review.City).OrderByDescending(city => city.Count());
+    // foreach(var result in groupByQueryList)
+    // {
+    //   Console.WriteLine("Foreach time");
+    //   Console.WriteLine(result.Key);
+    //   foreach (var res in result)
+    //   {
+
+    //   Console.WriteLine ("ConsoleWriteLine City: " + result);
+    //   }
+    // }
+    //   Console.WriteLine("Console Writeline time");
+    //   Console.WriteLine(mostReviews2.Where(city => city.Count() > 0));
+    //   // var mostReviews = _db.Reviews.Max(review => review.City);
+    // /*   query = query.Where(review => review.City == mostRating); */
+    //   // return await query.ToListAsync();
+    //   return ("HI");
+    //  }
+    
+    [HttpGet("TestRoute")]
+    public async Task<ActionResult<string>> TestRoute()
+    {
+      var listReview = await _db.Reviews.ToListAsync();
+      var groupedReviews = listReview.GroupBy(review => review.City);
+      string returnString = "";
+      foreach (var cityGroup in groupedReviews)
+      {
+        returnString += ("City: " + cityGroup.Key);
+        returnString += System.Environment.NewLine;
+  
+        foreach(Review review in cityGroup)
+        {
+          returnString += ("Review: " + review.Description);
+          returnString += System.Environment.NewLine;
+        }
+      }
+      return (returnString);
+    }
+
 //Our POST route utilizes the function CreatedAtAction. This is so that it can end up returning the Animal object to the user
 //, as well as update the status code to 201, for "Created", rather than the default 200 OK.
     // POST api/animals
