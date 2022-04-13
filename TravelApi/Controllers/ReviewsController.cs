@@ -71,61 +71,75 @@ namespace TravelApi.Controllers
       query = query.Where(review => review.Rating == highestRating);
       return await query.ToListAsync();
     }
-// var query2 = _db.Reviews.GroupBy(x => x.City).Select(x => x.OrderByDescending(x => x.Count()).FirstOrDefault());
-// .GroupBy _db.Reviews.City into CityCount
-// .Select(grp => new {CityCount.Max()}
 
+   // https://localhost:5001/api/Reviews/MostRatings
+    [HttpGet("SortByRating")]
+    public async Task<ActionResult<IEnumerable<Review>>> SortByRating()
+    {
+      // returns a list of reviews sorted by rating (highest to lowest).
+      var query = _db.Reviews.AsQueryable();
+      query = query.OrderByDescending(review => review.Rating);
+      // query = query.Take(3).Where(review => review.Rating == 5);
+      return await query.ToListAsync();
+    }
 
-    //https://localhost:5001/api/Reviews/MostRatings
-    // [HttpGet("MostReviews")]
-    // public async Task<ActionResult<string>> GetMostRatings()
-    // {
-    //   var query = _db.Reviews.AsQueryable();
-        // var groupByQuery = from reviews in _db.Reviews
-        // group reviews by reviews.City into newGroup
-        // orderby newGroup.Key
-        // select newGroup;
-        // var groupByQueryList = groupByQuery.ToListAsync();
-    //   var listOfReviews = _db.Reviews.ToList();
-    //   var mostReviews = query.GroupBy(review => review.City);
-    //   var mostReviews2 = listOfReviews.GroupBy(review => review.City).OrderByDescending(city => city.Count());
-    // foreach(var result in groupByQueryList)
-    // {
-    //   Console.WriteLine("Foreach time");
-    //   Console.WriteLine(result.Key);
-    //   foreach (var res in result)
-    //   {
-
-    //   Console.WriteLine ("ConsoleWriteLine City: " + result);
-    //   }
-    // }
-    //   Console.WriteLine("Console Writeline time");
-    //   Console.WriteLine(mostReviews2.Where(city => city.Count() > 0));
-    //   // var mostReviews = _db.Reviews.Max(review => review.City);
-    // /*   query = query.Where(review => review.City == mostRating); */
-    //   // return await query.ToListAsync();
-    //   return ("HI");
-    //  }
-    
-    [HttpGet("TestRoute")]
-    public async Task<ActionResult<string>> TestRoute()
+    [HttpGet("MostRated")]
+    public async Task<ActionResult<IEnumerable<Review>>> GetMostRated()
     {
       var listReview = await _db.Reviews.ToListAsync();
       var groupedReviews = listReview.GroupBy(review => review.City);
       string returnString = "";
+      var highestCount = 0;
       foreach (var cityGroup in groupedReviews)
       {
-        returnString += ("City: " + cityGroup.Key);
-        returnString += System.Environment.NewLine;
-  
+        var counter = 0;
         foreach(Review review in cityGroup)
         {
-          returnString += ("Review: " + review.Description);
-          returnString += System.Environment.NewLine;
+          counter++;
+        }
+
+        if (counter >= highestCount)
+        {
+          highestCount = counter;
+          returnString = cityGroup.Key;
         }
       }
-      return (returnString);
+      
+      var returnReview = listReview.Where(review => review.City == returnString).ToList();
+      return (returnReview);
     }
+
+
+
+
+    // [HttpGet("GroupedByCity")]
+    // public async Task<ActionResult<string>> GetGroupedByCity()
+    // {
+    //   var listReview = await _db.Reviews.ToListAsync();
+    //   var groupedReviews = listReview.GroupBy(review => review.City);
+    //   string returnString = "";
+      
+    //   foreach (var cityGroup in groupedReviews)
+    //   {
+    //     returnString += ("City: " + cityGroup.Key);
+    //     returnString += System.Environment.NewLine;
+    //     var counter = 0;
+    //     foreach(Review review in cityGroup)
+    //     {
+    //       counter++;
+    //       returnString += ("Review: " + review.Description);
+    //       returnString += System.Environment.NewLine;
+    //     }
+
+    //     if (counter >= highestCount)
+    //     {
+    //       highestCount = counter;
+    //       returnString = cityGroup.Key;
+    //     }
+    //   }
+      
+    //   return (returnString);
+    // }
 
 //Our POST route utilizes the function CreatedAtAction. This is so that it can end up returning the Animal object to the user
 //, as well as update the status code to 201, for "Created", rather than the default 200 OK.
