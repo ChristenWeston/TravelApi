@@ -79,7 +79,6 @@ namespace TravelApi.Controllers
       // returns a list of reviews sorted by rating (highest to lowest).
       var query = _db.Reviews.AsQueryable();
       query = query.OrderByDescending(review => review.Rating);
-      // query = query.Take(3).Where(review => review.Rating == 5);
       return await query.ToListAsync();
     }
 
@@ -221,5 +220,3 @@ namespace TravelApi.Controllers
 
   }
 }
-
-//http://localhost:5000/api/reviews
