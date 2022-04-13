@@ -88,7 +88,7 @@ namespace TravelApi.Controllers
     {
       var listReview = await _db.Reviews.ToListAsync();
       var groupedReviews = listReview.GroupBy(review => review.City);
-      string returnString = "";
+      string highestCity = "";
       var highestCount = 0;
       foreach (var cityGroup in groupedReviews)
       {
@@ -101,11 +101,11 @@ namespace TravelApi.Controllers
         if (counter >= highestCount)
         {
           highestCount = counter;
-          returnString = cityGroup.Key;
+          highestCity = cityGroup.Key;
         }
       }
       
-      var returnReview = listReview.Where(review => review.City == returnString).ToList();
+      var returnReview = listReview.Where(review => review.City == highestCity).ToList();
       return (returnReview);
     }
 
