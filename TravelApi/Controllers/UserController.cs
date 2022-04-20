@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TravelApi.Models;
 using TravelApi.Services;
+using System;
 
 namespace TravelApi.Controllers
 {
@@ -21,8 +22,10 @@ namespace TravelApi.Controllers
             var response = _userService.Authenticate(model);
 
             if (response == null)
+                {
                 return BadRequest(new { message = "Username or password is incorrect" });
-
+                }
+            Console.WriteLine("**************** Made it past the BadRequestLine ******");
             return Ok(response);
         }
 

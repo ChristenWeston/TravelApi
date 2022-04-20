@@ -7,13 +7,15 @@ using TravelApi.Entities;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-  public void OnAuthorization(AuthorizationFilterContext context)
-  {
-    var user = (User)context.HttpContext.Items["User"];
-    if (user == null)
+    public void OnAuthorization(AuthorizationFilterContext context)
     {
-      // not logged in
-      context.Result = new JsonResult(new { message = "unauthorized"}) { StatusCode = StatusCodes.Status401Unauthorized };
+        Console.WriteLine("********* Context: " + context);
+        var user = (User)context.HttpContext.Items["User"];
+        Console.WriteLine("**************Here's the user: " + user);
+        if (user == null)
+        {
+            // not logged in
+            context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+        }
     }
-  }
 }

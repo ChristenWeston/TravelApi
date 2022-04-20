@@ -24,7 +24,7 @@ namespace TravelApi.Services
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications
         private List<User> _users = new List<User>
         {
-            new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" }
+            new User { Id = 1, FirstName = "Test", LastName = "User", Username = "testUsername", Password = "testPassword" }
         };
 
         private readonly AppSettings _appSettings;
@@ -63,7 +63,9 @@ namespace TravelApi.Services
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
+            Console.WriteLine("We're in the JWT Token" + tokenHandler);
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            Console.WriteLine("************ Here's the Key: " + key);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
