@@ -23,6 +23,7 @@ namespace TravelApi.Controllers
 
     // GET api/animals
     //http://localhost:5000/api/animals?species=dinosaur&gender=female
+    [Authorize]
     [HttpGet]
     //added a parameter to the method of type string that we've called species. The naming here is important as .NET
     // will automatically bind parameter values based on the query string. A call to http://localhost:5000/api/animals?species=dinosaur 

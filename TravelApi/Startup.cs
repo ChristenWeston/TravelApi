@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TravelApi.Models;
+using TravelApi.Helpers;
+using TravelApi.Services;
 
 namespace TravelApi
 {
@@ -20,12 +22,15 @@ namespace TravelApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            //Adding Cors
+            services.AddCors(); //New
             services.AddDbContext<TravelApiContext>(opt =>
                 opt.UseMySql(Configuration["ConnectionStrings:DefaultConnection"], ServerVersion.AutoDetect(Configuration["ConnectionStrings:DefaultConnection"])));
             // Register the swagger services
             services.AddSwaggerDocument();
             services.AddControllers();
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings")); // New
+            services.AddScoped<IUserService, UserService>(); // New
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +43,11 @@ namespace TravelApi
 
             // app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            app.UseMiddleware<JwtMiddleware>();
             app.UseAuthorization();
             // To use images and css
             app.UseStaticFiles();

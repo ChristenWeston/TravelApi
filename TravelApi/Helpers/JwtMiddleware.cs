@@ -6,9 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Services;
+using TravelApi.Services;
 
-namespace WebApi.Helpers
+namespace TravelApi.Helpers
 {
   public class JwtMiddleware
   {
